@@ -27,7 +27,6 @@ jobs:
         id: mc
         run: |
           python - <<'PY'
-          import os
           import xml.etree.ElementTree as ET
           import re
 
@@ -52,10 +51,7 @@ jobs:
             raise SystemExit(f'Could not parse Minecraft version from {version_text}')
 
           mc_version = match.group(1)
-          output_path = os.environ.get('GITHUB_OUTPUT')
-          if not output_path:
-            raise SystemExit('GITHUB_OUTPUT is not set')
-          with open(output_path, 'a', encoding='utf-8') as fh:
+          with open('${GITHUB_OUTPUT}', 'a', encoding='utf-8') as fh:
             fh.write(f"mc_version={mc_version}\n")
           PY
 
