@@ -109,7 +109,7 @@ public class UserInterface implements Listener {
         }
         homeIcons = YamlConfiguration.loadConfiguration(file2);
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, p -> {
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
             refresh();
         });
     }
@@ -179,12 +179,12 @@ public class UserInterface implements Listener {
     }
 
     public void openMainPage() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, p -> {
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
         refresh();
         if (inventorys != null && inventorys.length > 0) {
-            Bukkit.getScheduler().runTask(plugin, () -> {
+            player.getScheduler().run(plugin, task1 ->{
                 player.openInventory(inventorys[0]);
-            });
+            }, () ->{});
         }
         });
     }
@@ -196,12 +196,12 @@ public class UserInterface implements Listener {
     }
 
     private void openHomesPage(int page){
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, p -> {
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
             refresh();
             if(inventorys.length>page&&page>=0){
-                Bukkit.getScheduler().runTask(plugin, () -> {
+                player.getScheduler().run(plugin, task1 ->{
                     player.openInventory(inventorys[page]);
-                });
+                }, () ->{});
             }
         });
     }
@@ -257,14 +257,14 @@ public class UserInterface implements Listener {
 
     private void renameCurrentHome(String text){
         currentlyDeleting.setTitle(text);
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () ->{
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
             DatabaseManager.getInstance().delHome(currentlyDeleting.getHomeID());
             DatabaseManager.getInstance().saveHome(player, currentlyDeleting);
         });
     }
 
     public void saveHome(Home home, Player player){
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () ->{
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
             Biome b1 = player.getWorld().getBiome(player.getLocation());
             home.setIcon(BiomeConverter.getInstance().getBiomeIcon(b1));
             if (DatabaseManager.getInstance().saveHome(player, home)) {

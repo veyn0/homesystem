@@ -270,22 +270,22 @@ public class DatabaseManager {
         Bukkit.getLogger().info("connecting to remote database");
         localdbInUse = false;
 
-    Bukkit.getScheduler().runTaskAsynchronously(plugin, p -> {
-        try {
-            DatabaseManager.setConnection(DriverManager.getConnection(url, username, password));
-            createTableIfNotExists();
-            Bukkit.getLogger().info("MySQL database connected successfully.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            Bukkit.getLogger().severe("MySQL connection error: " + e.getMessage());
-        }
-    });
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
+            try {
+                DatabaseManager.setConnection(DriverManager.getConnection(url, username, password));
+                createTableIfNotExists();
+                Bukkit.getLogger().info("MySQL database connected successfully.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Bukkit.getLogger().severe("MySQL connection error: " + e.getMessage());
+            }
+        });
 
     }
 
 
     private void connectLocal() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, p -> {
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
             File pluginFolder = plugin.getDataFolder();
 
             if (!pluginFolder.exists()) {

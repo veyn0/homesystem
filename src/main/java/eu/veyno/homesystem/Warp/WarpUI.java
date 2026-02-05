@@ -82,7 +82,7 @@ public class WarpUI implements Listener {
     }
 
     public void refresh() {
-        Bukkit.getScheduler().runTaskAsynchronously(Homesystem.plugin, () ->{
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
             homes = DatabaseManager.getInstance().getPublicHomes().toArray(new Home[0]);
             inventoryTitle = ui.getString("warpinventorytitle");
             int pageCount = (homes.length / 36) + 1;
