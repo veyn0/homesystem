@@ -64,7 +64,7 @@ public class WarpUI implements Listener {
     }
 
     public void init(){
-        File pluginFolder = Bukkit.getPluginManager().getPlugin("Homesystem").getDataFolder();
+        File pluginFolder = plugin.getDataFolder();
         File discordConfigsFolder = new File(pluginFolder, "Home");
         if (!discordConfigsFolder.exists()) {
             discordConfigsFolder.mkdirs();
@@ -78,11 +78,13 @@ public class WarpUI implements Listener {
             }
         }
         ui = YamlConfiguration.loadConfiguration(file);
-        refresh();
+
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
+            refresh();
+        });
     }
 
     public void refresh() {
-        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
             homes = DatabaseManager.getInstance().getPublicHomes().toArray(new Home[0]);
             inventoryTitle = ui.getString("warpinventorytitle");
             int pageCount = (homes.length / 36) + 1;
@@ -114,14 +116,18 @@ public class WarpUI implements Listener {
                     count++;
                 }
             }
-        });
     }
 
     public void openMainPage() {
-        refresh();
-        if (inventorys != null && inventorys.length > 0) {
-            player.openInventory(inventorys[0]);
-        }
+
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
+            refresh();
+            if (inventorys != null && inventorys.length > 0) {
+                player.getScheduler().run(plugin, task1-> {
+                    player.openInventory(inventorys[0]);
+                }, () ->{});
+            }
+        });
     }
 
     private Home getHomeBySlot(int slot, int page){
@@ -131,23 +137,32 @@ public class WarpUI implements Listener {
     }
 
     private void openHomesPage(int page){
-        refresh();
-        if(inventorys.length>page&&page>=0){
-            player.openInventory(inventorys[page]);
-        }
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
+            refresh();
+            if (inventorys.length > page && page >= 0) {
+                player.getScheduler().run(plugin, task1-> {
+                    player.openInventory(inventorys[page]);
+                }, () ->{});
+
+            }
+        });
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e){
+        Bukkit.getLogger().info("1");
         if(e.getView().getPlayer()==player) {
+            Bukkit.getLogger().info("2");
             boolean isinInventory = false;
             for (Inventory i : inventorys) {
-                if (e.getInventory() == i) {
+                if (e.getClickedInventory() == i) {
                     isinInventory = true;
+                    Bukkit.getLogger().info("3");
                 }
             }
             if (isinInventory) {
                 e.setCancelled(true);
+                Bukkit.getLogger().info("4");
                 String title = ChatColor.stripColor(e.getView().getTitle()).replace(ui.getString("homeinvtitle"), "").trim();
                 String[] cleanString = title.split("/");
                 String currentPage = cleanString[0].trim().replaceAll("[^0-9]", "");

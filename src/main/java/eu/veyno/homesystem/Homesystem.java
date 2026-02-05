@@ -21,6 +21,10 @@ public final class Homesystem extends JavaPlugin implements Listener {
 
     public static Plugin plugin;
 
+    public static Plugin getPlugin() {
+        return plugin;
+    }
+
     @Override
     public void onEnable() {
         plugin = this;

@@ -1,5 +1,6 @@
 package eu.veyno.homesystem.Home;
 
+import eu.veyno.homesystem.Homesystem;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -76,28 +77,49 @@ public class Home {
             notMoving = true;
             teleportinghomes.put(player, this);
             teleportingPlayers.add(player.getUniqueId().toString());
-            new BukkitRunnable() {
-                int countdown = configfile.getInt("teleportdelay");
-                @Override
-                public void run() {
-                    if(!notMoving){
-                        player.sendMessage(messages.getString("prefix") + messages.getString("teleportcancel"));
-                        notMoving = true;
-                        teleportingPlayers.remove(player.getUniqueId().toString());
-                        this.cancel();
-                    }else if (countdown > 0) {
-                        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, 1.0f, 1.0f);
-                        player.sendMessage(messages.getString("prefix") + messages.getString("teleportcountdown") + " " + countdown);
-                        countdown--;
-                    } else{
-                        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-                        player.sendMessage(messages.getString("prefix") + messages.getString("teleportsuccess"));
-                        player.teleport(Home.this.location);
-                        teleportingPlayers.remove(player.getUniqueId().toString());
-                        this.cancel();
-                    }
+            final int[] countdown = {configfile.getInt("teleportdelay")};
+            player.getScheduler().runAtFixedRate(Homesystem.getPlugin(), task ->{
+                if(!notMoving){
+                    player.sendMessage(messages.getString("prefix") + messages.getString("teleportcancel"));
+                    notMoving = true;
+                    teleportingPlayers.remove(player.getUniqueId().toString());
+                    task.cancel();
+                }else if (countdown[0] > 0) {
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, 1.0f, 1.0f);
+                    player.sendMessage(messages.getString("prefix") + messages.getString("teleportcountdown") + " " + countdown[0]);
+                    countdown[0]--;
+                } else{
+                    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+                    player.sendMessage(messages.getString("prefix") + messages.getString("teleportsuccess"));
+                    player.teleportAsync(Home.this.location);
+                    teleportingPlayers.remove(player.getUniqueId().toString());
+                    task.cancel();
                 }
-            }.runTaskTimer(Bukkit.getPluginManager().getPlugin("Homesystem"), 0, 20);
+            }, ()->{}, 1, 20);
+
+
+//            new BukkitRunnable() {
+//                int countdown = configfile.getInt("teleportdelay");
+//                @Override
+//                public void run() {
+//                    if(!notMoving){
+//                        player.sendMessage(messages.getString("prefix") + messages.getString("teleportcancel"));
+//                        notMoving = true;
+//                        teleportingPlayers.remove(player.getUniqueId().toString());
+//                        this.cancel();
+//                    }else if (countdown > 0) {
+//                        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, 1.0f, 1.0f);
+//                        player.sendMessage(messages.getString("prefix") + messages.getString("teleportcountdown") + " " + countdown);
+//                        countdown--;
+//                    } else{
+//                        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+//                        player.sendMessage(messages.getString("prefix") + messages.getString("teleportsuccess"));
+//                        player.teleportAsync(Home.this.location);
+//                        teleportingPlayers.remove(player.getUniqueId().toString());
+//                        this.cancel();
+//                    }
+//                }
+//            }.runTaskTimer(Bukkit.getPluginManager().getPlugin("Homesystem"), 0, 20);
         }
     }
 

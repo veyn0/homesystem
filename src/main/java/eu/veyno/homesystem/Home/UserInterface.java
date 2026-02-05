@@ -166,7 +166,7 @@ public class UserInterface implements Listener {
         currentEditInventory.setItem(0, mainmenuicon);
         ItemStack publicIcon = ConfigManager.getInstance().getIcon("publicselectortrue", null);
         ItemStack privatIcon = ConfigManager.getInstance().getIcon("publicselectorfalse", null);
-        /*
+
         if(home.isPublic()){
 
             currentEditInventory.setItem(2, publicIcon);
@@ -174,7 +174,7 @@ public class UserInterface implements Listener {
         else {
             currentEditInventory.setItem(2, privatIcon);
         }
-        */
+
         player.openInventory(currentEditInventory);
     }
 
@@ -314,7 +314,7 @@ public class UserInterface implements Listener {
                 }
                 else if(e.getSlot()==2){
                     player.playSound(player, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                    //onPublicButtonpress();
+                    onPublicButtonpress();
                 }
                 e.setCancelled(true);
             }
