@@ -38,14 +38,14 @@ jobs:
           version_text = None
           for dep in root.findall('.//m:dependency', ns):
             artifact = dep.find('m:artifactId', ns)
-            if artifact is not None and artifact.text == 'spigot-api':
+            if artifact is not None and artifact.text == 'paper-api':
               ver = dep.find('m:version', ns)
               if ver is not None and ver.text:
                 version_text = ver.text.strip()
                 break
 
           if not version_text:
-            raise SystemExit('spigot-api version not found in pom.xml')
+            raise SystemExit('paper-api version not found in pom.xml')
 
           match = re.match(r'(\d+\.\d+(?:\.\d+)?)', version_text)
           if not match:
